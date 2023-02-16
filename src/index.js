@@ -35,54 +35,35 @@ const MORSE_TABLE = {
     '---..':  '8',
     '----.':  '9',
     '-----':  '0',
-};
-
-function decode(expr) {
-       
-function string_to_morse(expr) {
+  };
+  
+  function decode(expr) {
+  
+  function bin_to_morse(expr) {  
     let r = "";
-    for (i of expr) {
-        if (i == " ") {
-            r += "*,";
+      for (i of expr.match(/.{1,10}/g)) {
+        if (i === "*".repeat(10)) {
+          r += "*,";
         } else {
-        r += Object.fromEntries(Object.entries(MORSE_TABLE).map(([key,value])=>[value,key]))[i] + ",";
-        }
+          r += i.replace(/^0*/,'').replace(/10/g, ".").replace(/11/g, "-") + ",";
+      }
     }
-    return r.substring(0, r.length - 1);
-} 
-
-function morse_to_bin(morse) {
+    return r.substring(0, r.length - 1).split(",")
+  }
+  
+  function morse_to_string(morse) {
     let r = "";
     for (i of morse) {
-        if (i == ".") {
-            r += "10";
-        } else if (i == "-") {
-            r += "11";
-        } else if (i == ",") {
-            r += ",";
-        } else {
-            r += "*";
-        }
+      if (i === "*") {
+          r += " "
+      }    
+      for (key in MORSE_TABLE) {
+        if (i === key) {
+          r += MORSE_TABLE[i];
+        } 
+      } 
+    }  
+    return r;
     }
-    return r.split(",");
-}
-
-function pad_bin(bin) {
-let r = "";
-for (i of bin) {
-    if (i == "*") {
-        r += "*".repeat(10);
-    } else {
-        r += "0".repeat(10 - i.length) + i;
-    }
-}
-return r;
-}
-    
-return pad_bin(morse_to_bin(string_to_morse(expr)));
-}
-
-module.exports = {
-    decode
-}
-console.log(decode('call the police'));
+    return morse_to_string(bin_to_morse(expr))
+  }
